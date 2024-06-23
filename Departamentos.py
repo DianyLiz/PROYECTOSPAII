@@ -396,132 +396,147 @@ departamentos_municipios = {
     - TOMY JOSE MONTUFAR ZUNIGA
     - ANROLD STANLY FORD MADRID
 '''
-import bcrypt # libreria para encriptar contraseñas
-pwd = bytes('hola', 'utf-8') # contraseña encriptada
-sal = bcrypt.gensalt() # generador de sal
-encriptado = bcrypt.hashpw(pwd, sal) # encriptar la contraseña
+import os
+os.system('cls' if os.name == 'nt' else 'clear')
+
+import bcrypt
+
+pwd = bytes('hola', 'utf-8')
+sal = bcrypt.gensalt()
+encriptado = bcrypt.hashpw(pwd, sal)
 
 def limpiar():
     import os
     os.system('cls' if os.name == 'nt' else 'clear')
-    
-limpiar()
 
-usuario_correcto = "Diany"
-intentos = 3
-# Acceder al programa
-while intentos > 0:
-    limpiar()
-    usuario = input("Ingrese su usuario: ")
-    contraseña = bytes(input("Ingrese su contraseña: "), 'utf-8')
+# Verificar usuario
+def verificar_usuario():
+    usuario_correcto = "Diany"
+    intentos = 3
+    while intentos > 0:
+        limpiar()
+        usuario = input("Ingrese su usuario: ")
+        contraseña = bytes(input("Ingrese su contraseña: "), 'utf-8')
 
-    if usuario == usuario_correcto and bcrypt.checkpw(contraseña, encriptado):
-        print("Bienvenido al programa")
-        print(encriptado)
-        break
+        if usuario == usuario_correcto and bcrypt.checkpw(contraseña, encriptado):
+            print("Bienvenido al programa")
+            print(encriptado)
+            return True
+        else:
+            intentos -= 1
+            print("Usuario o contraseña incorrecta, intente de nuevo (",intentos," restantes)")
+            input("Presione Enter para intentarlo de nuevo...") 
     else:
-        intentos -= 1
-        print("Usuario o contraseña incorrecta, intente de nuevo (",intentos," restantes)")
-        input("Presione Enter para intentarlo de nuevo...") 
-else:
+        limpiar()
+        print("Ha excedido el numero de intentos permitidos.")
+        return False
+
+# Inspeccionar departamentos
+def inspeccionar_departamentos():
     limpiar()
-    print("Ha excedido el numero de intentos permitidos.")
-    exit()
-
-# Menu principal
-while True:
-    limpiar()
-    print("Bienvenido al programa")
-    print("1. Inspeccionar departamentos y muncipios.")
-    print("2. Ingresar su cedula.")
-    print("3. Salir.")
-    print("4. Renta Ejercicio 7 .")
-    print("5. Edad Ejercicio 17 .")
-    selec = input("Elija una opcion: ")
-
-    # Inspeccionar departamentos y municipios
-    if selec == '1':
-        limpiar()
-        id = input("Ingrese el numero de departamento para ver sus municipios y su codigo (ejemplo 16): ")
-        if not id.isdigit() or len(id) != 2:
-            print("Codigo no valido, por favor intente de nuevo. (2 digitos y solo enteros)")
-            input("Presione Enter para continuar...")
-        else:
-            if id not in departamentos_municipios:
-                print("Departamento no encontrado.")
-                input("Presione Enter para continuar...")
-            else:
-                print("Departamento encontrado: ", departamentos_municipios[id]['nombre'])
-                print("-----------------------------------------------------")
-                print("Codigo\t\t Municipio")
-                print("-----------------------------------------------------")
-                for municipio in departamentos_municipios[id]['municipios']:
-                    print(municipio,"\t\t",departamentos_municipios[id]['municipios'][municipio])
-                    
-                input("Presione Enter para continuar...")
-    # Ingresar su cedula
-    elif selec == '2':
-        limpiar()
-        dni = input("Ingrese su numero de identidad: ")
-
-        if not dni.isdigit() or len(dni) != 13:
-            print("Numero de identidad invalido, intente de nuevo (13 digitos y solo enteros)")
-            input("Presione Enter para continuar...")
-        else:
-            id_departamento = dni[0:2]
-            id_municipio = dni[2:4]
-            id_anionacimiento = dni[4:8]
-            edad = 2024 - int(id_anionacimiento)
-
-            if id_departamento not in departamentos_municipios or id_municipio not in departamentos_municipios[id_departamento]['municipios']:
-                print("Datos no encontrados.")
-                input("Presione Enter para continuar...")
-            else:
-                departamento = departamentos_municipios[id_departamento]
-                municipio = departamento['municipios'].get(id_municipio)
-                print("Departamento: ", departamento['nombre'])
-                print("Municipio: ", municipio)
-                print("Edad: ", edad, " años")
-
-                if(edad>=21):
-                    print("Eres mayor de edad")
-                elif(edad>=18):
-                    print("Eres ciudadano")
-                else:
-                    print("Eres menor de edad")
-
-                input("Presione Enter para continuar...")
-    # Salir
-    elif selec == '4':
-        limpiar()
-        renta = int (input("Ingrese su renta anual: "))
-
-        if(renta<60000 ):
-            print("Su renta es del tipo impositivo de 10%")
-        elif(renta>=60000):
-            print("Su renta es del tipo impositivo de 45%")
-        else:
-            print("Error")
-
+    id = input("Ingrese el numero de departamento para ver sus municipios y su codigo (ejemplo 16): ")
+    if not id.isdigit() or len(id) != 2:
+        print("Codigo no valido, por favor intente de nuevo. (2 digitos y solo enteros)")
         input("Presione Enter para continuar...")
- 
-    elif selec == '5':
-        limpiar()
-        edad1 = int(input("Ingrese su Edad: "))
+    else:
+        if id not in departamentos_municipios:
+            print("Departamento no encontrado.")
+            input("Presione Enter para continuar...")
+        else:
+            print("Departamento encontrado: ", departamentos_municipios[id]['nombre'])
+            print("-----------------------------------------------------")
+            print("Codigo\t\t Municipio")
+            print("-----------------------------------------------------")
+            for municipio in departamentos_municipios[id]['municipios']:
+                print(municipio,"\t\t",departamentos_municipios[id]['municipios'][municipio])
+            input("Presione Enter para continuar...")
+# Ingresar cedula
+def ingresar_cedula():
+    limpiar()
+    dni = input("Ingrese su numero de identidad: ")
 
-        edad = 2024 - int(edad1)
+    if not dni.isdigit() or len(dni) != 13:
+        print("Numero de identidad invalido, intente de nuevo (13 digitos y solo enteros)")
+        input("Presione Enter para continuar...")
+    else:
+        id_departamento = dni[0:2]
+        id_municipio = dni[2:4]
+        id_anionacimiento = dni[4:8]
+        edad = 2024 - int(id_anionacimiento)
+
+        if id_departamento not in departamentos_municipios or id_municipio not in departamentos_municipios[id_departamento]['municipios']:
+            print("Datos no encontrados.")
+            input("Presione Enter para continuar...")
+        else:
+            departamento = departamentos_municipios[id_departamento]
+            municipio = departamento['municipios'].get(id_municipio)
+            print("Departamento: ", departamento['nombre'])
+            print("Municipio: ", municipio)
+            print("Edad: ", edad, " años")
+
+            if edad >= 21:
+                print("Eres mayor de edad")
+            elif edad >= 18:
+                print("Eres ciudadano")
+            else:
+                print("Eres menor de edad")
+
+            input("Presione Enter para continuar...")
+
+# Calcular renta
+def calcular_renta():
+    limpiar()
+    renta = int(input("Ingrese su renta anual: "))
+
+    if renta < 60000:
+        print("Su renta es del tipo impositivo de 10%")
+    elif renta >= 60000:
+        print("Su renta es del tipo impositivo de 45%")
+    else:
+        print("Error")
+
+    input("Presione Enter para continuar...")
+#calcular_edad
+def calcular_edad():
+    limpiar()
+    edad1 = int(input("Ingrese su Edad: "))
+
+    edad = 2024 - int(edad1)
+    anio = 2024 - edad1
+
+    for i in range(1, edad1+1):
         anio = 2024 - edad1
+        print("Edad: ", i, "=", anio + i)   
 
-        for i in range(1,edad1+1): 
-            anio = 2024 - edad1
-            print("Edad: ",i,"=",anio+i)   
+    input("Presione Enter para continuar...")
 
-        input("Presione Enter para continuar...")
- 
-    elif selec == '3':
+# Menu
+def menu():
+    while True:
         limpiar()
-        print("Programa finalizado.")
-        exit()
-    else:
-        print("Opcion no valida, intente de nuevo.")
-        input("Presione Enter para continuar...")
+        print("Bienvenido al programa")
+        print("1. Inspeccionar departamentos y muncipios.")
+        print("2. Ingresar su cedula.")
+        print("3. Salir.")
+        print("4. Renta Ejercicio 7 .")
+        print("5. Edad Ejercicio 17 .")
+        selec = input("Elija una opcion: ")
+
+        if selec == '1':
+            inspeccionar_departamentos()
+        elif selec == '2':
+            ingresar_cedula()
+        elif selec == '3':
+            limpiar()
+            print("Programa finalizado.")
+            exit()
+        elif selec == '4':
+            calcular_renta()
+        elif selec == '5':
+            calcular_edad()
+        else:
+            print("Opcion no valida, intente de nuevo.")
+            input("Presione Enter para continuar...")
+
+if verificar_usuario():
+    menu()
